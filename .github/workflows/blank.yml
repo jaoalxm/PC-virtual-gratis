@@ -1,5 +1,4 @@
-
-name: Build PC Virtual
+name: Build PC Virtual FiveM
 
 on:
   workflow_dispatch:
@@ -9,22 +8,30 @@ on:
 
 jobs:
   build:
+    name: Compilar PC Virtual
     runs-on: windows-latest
 
     steps:
-      - name: Baixar codigo
+      - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Instalar .NET
+      - name: Instalar .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          # ⚠️ Se der erro de versão, troque para '6.0.x'
+          dotnet-version: '8.0.x'
 
-      - name: Compilar PC Virtual
-        run: dotnet publish PCVirtual.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+      - name: Restaurar pacotes
+        run: dotnet restore
 
-      - name: Disponibilizar EXE
+      - name: Compilar projeto
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Gerar EXE pronto
+        run: dotnet publish --configuration Release --no-build -o ./saida
+
+      - name: Disponibilizar arquivo
         uses: actions/upload-artifact@v4
         with:
-          name: PCVirtual-Windows
-          path: bin/Release/net8.0-windows/win-x64/publish/
+          name: PC-Virtual-Pronto
+          path: ./saida
