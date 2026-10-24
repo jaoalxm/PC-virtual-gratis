@@ -1,0 +1,30 @@
+
+name: Build PC Virtual
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Compilar PC Virtual
+        run: dotnet publish PCVirtual.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+
+      - name: Disponibilizar EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: PCVirtual-Windows
+          path: bin/Release/net8.0-windows/win-x64/publish/
